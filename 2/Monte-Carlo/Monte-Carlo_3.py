@@ -16,8 +16,8 @@ while True:
     p.append([t, cnt])
     cnt += 1
 
-def polinom(x, list):
-    return sum([list[i][0]*(x**list[i][1]) for i in range(len(list))])
+def polinom(x, l):
+    return sum([l[i][0]*(x**l[i][1]) for i in range(len(l))])
 
     
 cnt_up = 0
