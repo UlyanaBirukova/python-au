@@ -1,17 +1,21 @@
 from scipy import stats
+import numpy
+import pandas
 import random
 import matplotlib.pyplot as plt
+%matplotlib inline
 
 # необходимые константы
 length = 100     # длина списка данных
 size_population = 50  # количество таких списков в популяции :)
 cross = 0.8      # вероятность скрещивания списков
 mutations = 0.1   # вероятность мутации
-generations = 20 # количество поколений
+generations = 2_000_000_000 # количество поколений
         
 # функция, возвращающая значение уровня приспособленности особи к условию задачи (чем больше р-значение, тем выше уровень)
-def fitness():
-    return stats.kstest(individ, 'poisson', (individ.mean(), individ.std()), N=5000)[1]
+def fitness(individ):
+    id = pandas.DataFrame(individ)
+    return stats.kstest(id, 'poisson', (id.mean(), id.std()), N=5000)[1]
     
 # класс значений уровня приспособленности
 class fitness_max():
@@ -26,7 +30,7 @@ class individ(list):
     
 # функция, создающая особь
 def borning_individ():
-    return [random.randint(0,1000) for i in range(length)]
+    return individ([random.randint(0,1000) for i in range(length)])
     
 # функция, создающая поколение
 def borning_population(n = 0):
@@ -37,8 +41,8 @@ cnt = 0 # счётчик числа поколений
 
 fitness_values = list(map(fitness, population)) # список значений уровня приспособленности всех особей популяции
 
-for individ, fitness_values in zip(population, fitness_values):
-    individ.fitness.values = fitness_values # присваиваем вычисленное значение уровня приспособленности
+#for individ, fitness_values in zip(population, fitness_values):
+#    individ.fitness.values = fitness_values # присваиваем вычисленное значение уровня приспособленности
 
 max_fitness_values = []    # максимальная приспособленность особей популяции
 middle_fitness_values = [] #средняя приспособленность особей популяции
@@ -71,9 +75,12 @@ def mutation(mutant, indpb = 0.01):
             mutant[i] = random.randint(0,1000)
             
 # обновлённый список значений приспособленности особей популяции
-fitness_values = [individ.fitness.values[0] for individ in population]
+#fitness_values = [individ.fitness.values[0] for individ in population]
+
 
 # сам генетический алгоритм
+inf = float('inf')
+individ = pandas.DataFrame({'0': [0]})
 while max(fitness_values) < stats.kstest('poisson', 'poisson', (individ.mean(), individ.std()), N=5000)[1] and cnt < generations:
 
     cnt += 1
@@ -102,9 +109,13 @@ while max(fitness_values) < stats.kstest('poisson', 'poisson', (individ.mean(), 
     middle_fitness_values.append(middle_fitness)
     
     best_index = fitness_value.index(max(fitness_values))
+    print(best_index)
     
-print("Самая приспособленная особь = ", *population[best_index], "\n")
-plt.plot('poisson', color='blue')
-plt.plot(population[best_index], color='green')
+    
+print("Самая приспособленная особь = ", population[fitness_values.index(max(fitness_values))], "\n")
+plt.plot(range(15), stats.poisson.cdf(range(15), mu=4), c='b', linewidth=2)
+plt.show()
+plt.plot(population[fitness_values.index(max(fitness_values))], color='green')
+plt.show()
 
 
