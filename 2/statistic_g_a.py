@@ -1,9 +1,7 @@
 from scipy import stats
-import numpy
 import pandas
 import random
 import matplotlib.pyplot as plt
-%matplotlib inline
 
 # необходимые константы
 length = 100     # длина списка данных
